@@ -39,20 +39,18 @@ def poly2json(infile, outfile=None):
 def open_file_dialog():
     root = tk.Tk()
     root.withdraw()  # Hide the root window
-    file_path = filedialog.askopenfilename(title="Select .poly file to convert!", filetypes=[("Polygon files", "*.poly")])
+    file_path = filedialog.askopenfilename(title="Select .poly file to convert", filetypes=[("Polygon files", "*.poly")])
     if file_path:
         try:
             geojson = poly2json(file_path)
-            messagebox.showinfo("Success", "File converted successfully!")
             save_file_dialog(geojson)
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred: {e}")
 
 def save_file_dialog(geojson):
-    file_path = filedialog.asksaveasfilename(defaultextension=".json", filetypes=[("JSON files", "*.json")])
+    file_path = filedialog.asksaveasfilename(title="Save .json file", defaultextension=".json", filetypes=[("JSON files", "*.json")])
     if file_path:
         with open(file_path, "w") as fp:
             json.dump(geojson, fp, indent=4)
-    messagebox.showinfo("Success", "File saved successfully!")  
 
 open_file_dialog()
