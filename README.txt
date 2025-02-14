@@ -18,3 +18,5 @@ Convert .poly to .json:
 
 Convert .json to .poly:
 - Json(file_path).convert()
+
+Use zealandia.json and zealandia.poly as example files
