@@ -41,7 +41,7 @@ class Poly(File):
         }
         return geojson
     
-    def open_file_dialog(self):
+    def convert(self):
         root = tk.Tk()
         root.withdraw()  # Hide the root window
         file_path = filedialog.askopenfilename(title="Select .poly file to convert", filetypes=[("Polygon files", "*.poly")])
@@ -60,5 +60,36 @@ class Poly(File):
             messagebox.showinfo("Success", f"File saved as {file_path}")
 
 
-a = Poly("zealandia.poly")
-a.open_file_dialog()
+class Json(File):
+    def __init__(self, path):
+        super().__init__(path)
+
+    def to_poly(self):
+        with open(self.path, "r") as fp:
+            data = json.load(fp)
+        coordinates = data["features"][0]["geometry"]["coordinates"][0]
+        with open(self.path.replace(".json", ".poly"), "w") as fp:
+            fp.write("polygon\n")
+            for lat, lon in coordinates:
+                fp.write(f"{lat} {lon}\n")
+            fp.write("END\n")
+        return self.path.replace(".json", ".poly")
+    
+    def convert(self):
+        root = tk.Tk()
+        root.withdraw()
+        file_path = filedialog.askopenfilename(title="Select .json file to convert", filetypes=[("JSON files", "*.json")])
+        if file_path:
+            try:
+                poly_path = Json.to_poly(self)
+                Json.save_file_dialog(self, poly_path)
+            except Exception as e:
+                messagebox.showerror("Error", f"An error occurred: {e}")
+    
+    def save_file_dialog(self, poly_path):
+        file_path = filedialog.asksaveasfilename(title="Save .poly file", defaultextension=".poly", filetypes=[("Polygon files", "*.poly")])
+        if file_path:
+            with open(file_path, "w") as fp:
+                with open(poly_path, "r") as p:
+                    fp.write(p.read())
+            messagebox.showinfo("Success", f"File saved as {file_path}")
